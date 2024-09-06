@@ -38,4 +38,16 @@ Geolocation: GeoDjango, Google Maps API
 Messaging: Django Channels (for real-time messaging)
 Calendar Integration: Google Calendar API
 Version Control: GitHub
-Deployment: Docker, Nginx, Gunicor
+
+
+Usage
+For Employers:
+Register as an employer.
+Log in and complete your profile.
+Post job listings or search for job seekers.
+Contact job seekers and schedule tasks using the internal messaging system.
+For Job Seekers:
+Register as a job seeker.
+Log in and complete your profile with skills and experience.
+Browse job postings based on location and filters.
+Apply for jobs or communicate with employers directly.
