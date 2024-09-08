@@ -6,7 +6,8 @@ from django.utils.translation import gettext_lazy as _
 class CustomUserManager(BaseUserManager):
     """
     This is a custom manager for your CustomUser model.
-    Django uses managers to handle the creation and retrieval of model instances.
+    Django uses managers to handle the creation
+    and retrieval of model instances.
     By default, Django provides a manager for creating and managing users,
     but we use a custom manager to customize user creation.
 
@@ -31,8 +32,8 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-    
-    def create_superuser(self, email, password=None, **extra_fieds):
+
+    def create_superuser(self, email, password=None, **extra_fields):
         """
         To create a superuser (an admin user with elevated permissions).
         args:
@@ -42,9 +43,9 @@ class CustomUserManager(BaseUserManager):
         return
             user:
         """
-        extra_fieds.setdefault('is_staff', True)
-        extra_fieds.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fieds)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractUser):
@@ -53,14 +54,14 @@ class CustomUser(AbstractUser):
     fields:
          The email address of the user, which is unique and used for login.
          Field for storing the password, but typically,
-        you don't need to define this field manually because Django handles it internally.
+        you don't need to define this field manually
+        because Django handles it internally.
         is_employer: A boolean field to specify if the user is an employer.
         is_job_seeker: A boolean field to specify if the user is a job seeker.
     """
     email = models.EmailField(_('email address'), unique=True)
-    password = models.CharField(_('password'), max_length=128)
     is_employer = models.BooleanField(default=False)
-    is_jonseeker = models.BooleanField(default=False)
+    is_jobseeker = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
