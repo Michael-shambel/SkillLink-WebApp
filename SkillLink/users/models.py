@@ -70,3 +70,35 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+class JobSeekerProfile(models.Model):
+    """
+    this method will create a model for creating
+    a model for job seeker profile
+    """
+
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="jobseeker_profile")
+
+    first_name = models.CharField(max_length=30, blank=False, null=False)
+    last_name = models.CharField(max_length=30, blank=False, null=False)
+    profile_picture = models.ImageField(upload_to='static/profile_picture/', blank=True, null=True)
+    skills = models.TextField()
+    experience = models.TextField(blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=False, null=False)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+class EmployerProfile(models.Model):
+    """
+    this method will create a profile for a employer
+    """
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='employer_profile')
+
+    first_name = models.CharField(max_length=30, blank=False, null=False)
+    last_name = models.CharField(max_length=30, blank=False, null=False)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=False, null=False)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"

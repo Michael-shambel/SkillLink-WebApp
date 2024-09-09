@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
-from .forms import UserRegistrationForm
+from django.contrib.auth.decorators import login_required
+from .forms import UserRegistrationForm, JobSeekerProfileForm, EmployerProfileForm
+from .models import JobSeekerProfile, EmployerProfile
+
 
 
 def select_by_user(request):
@@ -46,7 +49,36 @@ def register(request):
                 user.is_jobseeker = True
 
             user.save()
+            del request.session['user_type'] 
             return redirect('login')
     else:
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
+
+@login_required
+def job_seeker_profile(request):
+    user = request.user
+    profile, created = JobSeekerProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        form = JobSeekerProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('job_seeker_profile')
+        else:
+            form = JobSeekerProfileForm(instance=profile)
+    return render(request, 'users/job_seeker_profile.html', {'form': form})
+
+@login_required
+def employer_profile(request):
+    user = request.user
+    profile, created = EmployerProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        form = EmployerProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('employer_profile')
+    else:
+        form = EmployerProfileForm(instance=profile)
+    return render(request, 'users/employer_profile.html', {'form': form})
