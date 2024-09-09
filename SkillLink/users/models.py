@@ -62,6 +62,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     is_employer = models.BooleanField(default=False)
     is_jobseeker = models.BooleanField(default=False)
+    username = None
 
     objects = CustomUserManager()
 
