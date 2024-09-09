@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register, select_by_user, job_seeker_profile
+from .views import register, select_by_user, job_seeker_profile, employer_profile
 
 urlpatterns = [
     path('select-user-type/', select_by_user, name='select_by_user'),
