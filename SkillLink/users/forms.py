@@ -2,6 +2,7 @@ from typing import Any
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, JobSeekerProfile, EmployerProfile
+from django.contrib.auth.forms import AuthenticationForm
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -102,3 +103,22 @@ class EmployerProfileForm(forms.ModelForm):
         for field, placeholder in placeholders.items():
             self.fields[field].widget.attrs['placeholder'] = placeholder
             self.fields[field].required = True
+
+
+class LoginForm(AuthenticationForm):
+    """
+    Form used for login
+    """
+    class Meta:
+#         model = CustomUser
+        fields = ['username', 'password']
+
+        def __init__(self, *args, **kwargs):
+            super(LoginForm, self).__init__(*args, **kwargs)
+            placeholders = {
+                'username': 'Email',
+                'password': 'Password',
+            }
+            for field, placeholder in placeholders.items():
+                self.fields[field].widget.attrs['placeholder'] = placeholder
+                self.fields[field].required = True

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm, JobSeekerProfileForm, EmployerProfileForm
+from .forms import UserRegistrationForm, JobSeekerProfileForm, EmployerProfileForm, LoginForm
 from .models import JobSeekerProfile, EmployerProfile
+from django.contrib.auth import authenticate, login as auth_login   
 
 
 
@@ -55,6 +56,34 @@ def register(request):
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
 
+def login(request):
+    """
+    this login request will handle the login process
+    first it will check the request method is POST
+    if the request method is POST create an instance of LoginForm with the data
+    check if the form is valid by using form.is_valid()
+    authenticate the user by using authenticate method
+    if the user is authenticated login the user by using login method
+    """
+    if request.method == 'POST':
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                auth_login(request, user)
+                if user.is_employer:
+                    return redirect('employer_profile')
+                elif user.is_jobseeker:
+                    return redirect('job_seeker_profile')
+            else:
+                form.add_error(None, 'Invalid email or password')
+    else:
+        form = LoginForm()
+    return render(request, 'users/login.html', {'form': form})
+
+
 @login_required
 def job_seeker_profile(request):
     user = request.user
@@ -65,8 +94,9 @@ def job_seeker_profile(request):
         if form.is_valid():
             form.save()
             return redirect('job_seeker_profile')
-        else:
-            form = JobSeekerProfileForm(instance=profile)
+    else:
+        form = JobSeekerProfileForm(instance=profile)
+
     return render(request, 'users/job_seeker_profile.html', {'form': form})
 
 @login_required
