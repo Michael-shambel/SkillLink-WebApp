@@ -5,6 +5,10 @@ from .models import JobSeekerProfile, EmployerProfile
 from django.contrib.auth import authenticate, login as auth_login   
 
 
+def home(request):
+    """Handles traffic on home requests
+    """
+    return render(request, 'users/home.html')
 
 def select_by_user(request):
     """
