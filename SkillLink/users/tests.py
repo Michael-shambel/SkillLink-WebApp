@@ -39,6 +39,16 @@ class CustomUserTests(TestCase):
         self.assertEqual(profile.first_name, 'kerem')
         self.assertEqual(profile.last_name, 'darwash')
         self.assertEqual(profile.phone_number, '0987654321')
+    
+    def test_login(self):
+        login_url = reverse('login')
+        response = self.client.post(login_url, {
+            'email': 'test@example.com',
+            'password': 'password123'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
 
 class FormTests(TestCase):
 
