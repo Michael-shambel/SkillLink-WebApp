@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Post List</title>
+</head>
+<body>
+    <h1>Job Posts</h1>
+    <a href="{% url 'job_post_create' %}">Post a New Job</a>
+
+    <ul>
+        {% for job_post in job_posts %}
+            <li>
+                <h2>{{ job_post.title }}</h2>
+                <p><strong>Type:</strong> {{ job_post.job_type }}</p>
+                <p><strong>Location:</strong> {{ job_post.location }}</p>
+                <p><strong>Posted on:</strong> {{ job_post.date_posted }}</p>
+                <p><strong>Status:</strong> {% if job_post.is_active %}Active{% else %}Inactive{% endif %}</p>
+                <a href="{% url 'job_post_update' job_post.id %}">Edit</a> |
+                <a href="{% url 'job_post_delete' job_post.id %}">Delete</a>
+            </li>
+        {% empty %}
+            <li>No job posts available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

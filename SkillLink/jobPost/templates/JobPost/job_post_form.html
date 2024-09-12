@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if job_post %}Update{% else %}Create{% endif %} Job Post</title>
+</head>
+<body>
+    <h1>{% if job_post %}Update{% else %}Create{% endif %} Job Post</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'job_post_list' %}">Back to Job Posts</a>
+</body>
+</html>

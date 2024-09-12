@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Deletion</title>
+</head>
+<body>
+    <h1>Are you sure you want to delete this job post?</h1>
+    <p><strong>Title:</strong> {{ job_post.title }}</p>
+    <p><strong>Type:</strong> {{ job_post.job_type }}</p>
+    <p><strong>Location:</strong> {{ job_post.location }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm Deletion</button>
+    </form>
+    <a href="{% url 'job_post_list' %}">Cancel</a>
+</body>
+</html>
