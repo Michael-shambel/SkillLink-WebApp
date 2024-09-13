@@ -1,134 +1,156 @@
-from django.test import TestCase
+from rest_framework.test import APITestCase
+from rest_framework import status
+from django.urls import reverse
 from django.contrib.auth import get_user_model
+from rest_framework.authtoken.models import Token
 from .models import JobSeekerProfile, EmployerProfile
-from .forms import UserRegistrationForm, JobSeekerProfileForm, EmployerProfileForm
-from .models import CustomUser
-from django.urls import reverse, resolve
-from .views import register, select_by_user, job_seeker_profile, employer_profile
 
-class CustomUserTests(TestCase):
+User = get_user_model()
+
+class UserRegistrationTest(APITestCase):
+    
+    def test_register_user(self):
+        """
+        Test user registration with valid data
+        """
+        url = reverse('register_user')
+        data = {
+            'email': 'testuser@example.com',
+            'password': 'testpassword123',
+            'is_jobseeker': True
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(User.objects.get().email, 'testuser@example.com')
+
+    def test_register_user_missing_email(self):
+        """
+        Test user registration with missing email
+        """
+        url = reverse('register_user')
+        data = {
+            'password': 'testpassword123',
+            'is_jobseeker': True
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_user_duplicate_email(self):
+        """
+        Test user registration with duplicate email
+        """
+        User.objects.create_user(email='testuser@example.com', password='testpassword123')
+        url = reverse('register_user')
+        data = {
+            'email': 'testuser@example.com',
+            'password': 'newpassword456',
+            'is_jobseeker': True
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class TokenAuthenticationTest(APITestCase):
+
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            email='test@example.com',
-            password='password123',
-            is_jobseeker=True
-        )
+        self.user = User.objects.create_user(email='testuser@example.com', password='testpassword123')
     
-    def test_user_creation(self):
-        self.assertEqual(self.user.email, 'test@example.com')
-        self.assertTrue(self.user.check_password('password123'))
-        self.assertTrue(self.user.is_jobseeker)
+    def test_obtain_token(self):
+        """
+        Test token retrieval with valid credentials
+        """
+        url = reverse('obtain_token')
+        data = {
+            'email': 'testuser@example.com',
+            'password': 'testpassword123'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('token', response.data)
     
-    def test_jobseeker_profile_creation(self):
-        profile = JobSeekerProfile.objects.create(user=self.user, first_name='Mike', last_name='sham', phone_number='0974250852', skills='gardner', experience='5 years')
-        self.assertEqual(profile.user, self.user)
-        self.assertEqual(profile.first_name, 'Mike')
-        self.assertEqual(profile.last_name, 'sham')
-        self.assertEqual(profile.phone_number, '0974250852')
-        self.assertEqual(profile.skills, 'gardner')
-        self.assertEqual(profile.experience, '5 years')
-    
-    def test_employer_profile_creation(self):
-        employer_user = get_user_model().objects.create_user(
-            email='employer@example.com',
-            password='password123',
-            is_employer=True
-        )
-        profile = EmployerProfile.objects.create(user=employer_user, first_name='kerem', last_name='darwash', phone_number='0987654321')
-        self.assertEqual(profile.user, employer_user)
-        self.assertEqual(profile.first_name, 'kerem')
-        self.assertEqual(profile.last_name, 'darwash')
-        self.assertEqual(profile.phone_number, '0987654321')
-    
-    def test_login(self):
-        login_url = reverse('login')
-        response = self.client.post(login_url, {
-            'email': 'test@example.com',
-            'password': 'password123'
-        })
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.wsgi_request.user.is_authenticated)
+    def test_obtain_token_invalid_credentials(self):
+        """
+        Test token retrieval with invalid credentials
+        """
+        url = reverse('obtain_token')
+        data = {
+            'email': 'wronguser@example.com',
+            'password': 'wrongpassword'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+class JobSeekerProfileTest(APITestCase):
+    
+    def setUp(self):
+        self.user = User.objects.create_user(email='jobseeker@example.com', password='testpassword123', is_jobseeker=True)
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
-class FormTests(TestCase):
+    def test_create_job_seeker_profile(self):
+        """
+        Test creating a job seeker profile
+        """
+        url = reverse('create_job_seeker_profile')
+        data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'skills': 'Python, Django',
+            'experience': '5 years of experience',
+            'phone_number': '123456789'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(JobSeekerProfile.objects.count(), 1)
+        self.assertEqual(JobSeekerProfile.objects.get().first_name, 'John')
 
-    def test_user_registration_form_valid(self):
-        form_data = {
-            'email': 'testuser@examole.com',
-            'password1': 'password123zxzzx',
-            'password2': 'password123zxzzx',
+    def test_update_job_seeker_profile(self):
+        """
+        Test updating a job seeker profile
+        """
+        profile = JobSeekerProfile.objects.create(user=self.user, first_name='John', last_name='Doe', skills='Python')
+        url = reverse('update_job_seeker_profile')
+        data = {
+            'skills': 'Python, Django, React'
         }
-        form = UserRegistrationForm(data=form_data)
-        print(form.errors)
-        self.assertTrue(form.is_valid(), True)
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        profile.refresh_from_db()
+        self.assertEqual(profile.skills, 'Python, Django, React')
+
+class EmployerProfileTest(APITestCase):
     
-    def test_user_registration_form_invalid_email(self):
-        form_data = {
-            'email': 'invalid-email',
-            'password1': 'password123',
-            'password2': 'password123',
-        }
-        form = UserRegistrationForm(data=form_data)
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['email'], ['Enter a valid email address.'])
-    
-    def test_jobseeker_profile_form_valid(self):
-        form_data = {
-            'first_name': 'miki',
-            'last_name': 'sham',
-            'phone_number': '0987654321',
-            'skills': 'Plumber',
-            'experience': '5 years',
-        }
-        form = JobSeekerProfileForm(data=form_data)
-        print(form.errors)
-        self.assertEqual(form.is_valid(), True)
-    
-    def test_jobseeker_profile_form_missing_first_name(self):
-        form_data = {
-            'last_name': 'sham',
-            'phone_number': '0987654321',
-            'skills': 'plumber',
-            'experience': '5 years'
-        }
-        form = JobSeekerProfileForm(data=form_data)
-        self.assertFalse(form.is_valid(), False)
-        self.assertIn('first_name', form.errors)
-    
-    def test_employer_profile_form_valid(self):
-        form_data = {
+    def setUp(self):
+        self.user = User.objects.create_user(email='employer@example.com', password='testpassword123', is_employer=True)
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+    def test_create_employer_profile(self):
+        """
+        Test creating an employer profile
+        """
+        url = reverse('create_employer_profile')
+        data = {
             'first_name': 'Jane',
-            'last_name': 'smith',
-            'phone_number': '0987654321',
-            'location': 'New York'
-        }
-        form = EmployerProfileForm(data=form_data)
-        self.assertTrue(form.is_valid())
-    
-    def test_employer_profile_form_missing_phone_number(self):
-        form_data = {
-            'first_name': 'Jane',
-            'last_name': 'Smith',
+            'last_name': 'Doe',
             'location': 'New York',
+            'phone_number': '987654321'
         }
-        form = EmployerProfileForm(data=form_data)
-        self.assertFalse(form.is_valid())
-        self.assertIn('phone_number', form.errors)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(EmployerProfile.objects.count(), 1)
+        self.assertEqual(EmployerProfile.objects.get().first_name, 'Jane')
 
-
-class UrlTests(TestCase):
-    def test_register_url_resolves(self):
-        url = reverse('register')
-        self.assertEqual(resolve(url).func, register)
-    
-    def test_select_user_type_url_resolves(self):
-        url = reverse('select_by_user')
-        self.assertEqual(resolve(url).func, select_by_user)
-    
-    def test_job_seeker_profile_url_resolves(self):
-        url = reverse('job_seeker_profile')
-        self.assertEqual(resolve(url).func, job_seeker_profile)
-    
-    def test_employer_profile_url_resolves(self):
-        url = reverse('employer_profile')
-        self.assertEqual(resolve(url).func, employer_profile)
+    def test_update_employer_profile(self):
+        """
+        Test updating an employer profile
+        """
+        profile = EmployerProfile.objects.create(user=self.user, first_name='Jane', last_name='Doe')
+        url = reverse('update_employer_profile')
+        data = {
+            'location': 'San Francisco'
+        }
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        profile.refresh_from_db()
+        self.assertEqual(profile.location, 'San Francisco')

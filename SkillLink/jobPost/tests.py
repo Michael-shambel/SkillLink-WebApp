@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.urls import timezone
+from django.utils import timezone
 from users.models import CustomUser
 from .models import JobPost
 
