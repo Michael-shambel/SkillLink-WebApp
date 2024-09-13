@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'SkillLink.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'skilllink_db',
-        'USER': 'root',
-        'PASSWORD': 'miki@mysql',
+        'NAME': 'skillLink_db',
+        'USER': 'federico',
+        'PASSWORD': 'federico@14',
         'HOST': 'localhost',
         'PORT': '3306',
     }
