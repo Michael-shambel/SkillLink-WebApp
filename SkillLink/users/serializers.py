@@ -13,7 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
 class JobSeekerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobSeekerProfile
-        fields = '__all__'
+        fields = ['id', 'user', 'first_name', 'last_name', 'profile_picture', 'skills', 'experience', 'phone_number']
+        read_only_fields = ['id', 'user']
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
     class Meta:

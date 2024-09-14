@@ -1,22 +1,19 @@
-from django.urls import path
-from .views import (
-    register_user, 
-    obtain_token, 
-    list_users, 
-    create_job_seeker_profile, 
-    create_employer_profile, 
-    update_job_seeker_profile, 
-    update_employer_profile
-)
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserViewSet, TokenViewSet, JobSeekerProfileViewSet, EmployerProfileViewSet
 
+# Create a router and register our viewsets with it
+router = DefaultRouter()
+
+# Register the UserViewSet and TokenViewSet (for authentication)
+router.register(r'users', UserViewSet, basename='user')
+router.register(r'token', TokenViewSet, basename='token')
+
+# Register the JobSeekerProfileViewSet and EmployerProfileViewSet (for profiles)
+router.register(r'jobseekers', JobSeekerProfileViewSet, basename='jobseeker')
+router.register(r'employers', EmployerProfileViewSet, basename='employer')
+
+# The API URLs are now determined automatically by the router
 urlpatterns = [
-    path('api/register/', register_user, name='register_user'),
-    path('api/token/', obtain_token, name='obtain_token'),
-    path('api/users/', list_users, name='list_users'),
-    
-    # Profile management
-    path('api/profile/jobseeker/create/', create_job_seeker_profile, name='create_job_seeker_profile'),
-    path('api/profile/employer/create/', create_employer_profile, name='create_employer_profile'),
-    path('api/profile/jobseeker/update/', update_job_seeker_profile, name='update_job_seeker_profile'),
-    path('api/profile/employer/update/', update_employer_profile, name='update_employer_profile'),
+    path('api/', include(router.urls)),
 ]
