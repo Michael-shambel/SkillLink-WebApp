@@ -19,7 +19,8 @@ class JobSeekerProfileSerializer(serializers.ModelSerializer):
 class EmployerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployerProfile
-        fields = '__all__'
+        fields = ['id', 'user', 'first_name', 'last_name', 'location', 'phone_number']
+        read_only_fields = ['id', 'user']
 
 class TokenSerializer(serializers.ModelSerializer):
     class Meta:

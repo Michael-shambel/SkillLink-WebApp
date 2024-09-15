@@ -6,7 +6,7 @@ from .views import UserViewSet, TokenViewSet, JobSeekerProfileViewSet, EmployerP
 router = DefaultRouter()
 
 # Register the UserViewSet and TokenViewSet (for authentication)
-router.register(r'users', UserViewSet, basename='user')
+router.register(r'register', UserViewSet, basename='register')
 router.register(r'token', TokenViewSet, basename='token')
 
 # Register the JobSeekerProfileViewSet and EmployerProfileViewSet (for profiles)
