@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+import os
+
+
+def user_directory_path(instance, filename):
+    return f'user_{instance.user.id}/{filename}'
 
 
 class CustomUserManager(BaseUserManager):
@@ -82,7 +88,7 @@ class JobSeekerProfile(models.Model):
 
     first_name = models.CharField(max_length=30, blank=False, null=False)
     last_name = models.CharField(max_length=30, blank=False, null=False)
-    profile_picture = models.ImageField(upload_to='static/profile_picture/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
     skills = models.TextField()
     experience = models.TextField(blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=False, null=False)

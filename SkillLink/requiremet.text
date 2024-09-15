@@ -5,3 +5,4 @@ installed djangorestframework-3.15.2
 DO NOT FORGET TO CONFIGURE YOUR DATABASES BASED ON the setting i configured
 pip install djangorestframework
 pip install djangorestframework-simplejwt
+pip install Pillow (handle the image processing)
