@@ -4,6 +4,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'job-posts', views.JobPostViewSet, basename='job-post')
+router.register(r'applications', views.ApplicationViewSet, basename='application')
 
 urlpatterns = [
     path('api/', include(router.urls)),
