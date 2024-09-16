@@ -107,8 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-<<<<<<< HEAD
-=======
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -118,7 +116,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
->>>>>>> back_end
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
