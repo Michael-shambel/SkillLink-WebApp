@@ -21,3 +21,23 @@ class JobPost(models.Model):
     
     class Meta:
         ordering = ['-posted_on']
+
+class Application(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'pending'),
+        ('reviewed', 'Reviewed'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ]
+
+    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='applications')
+    applicant = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    applied_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('job_post', 'applicant')
+    
+    def __str__(self):
+        return f"{self.applicant.email} - {self.job_post.title}"

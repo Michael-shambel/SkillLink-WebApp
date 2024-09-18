@@ -147,3 +147,5 @@ AUTH_USER_MODEL = 'users.CustomUser'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
 ]
+from datetime import timedelta
+TOKEN_EXPIRED_AFTER_SECONDS = timedelta(days=1)
