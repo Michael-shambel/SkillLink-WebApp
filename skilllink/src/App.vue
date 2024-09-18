@@ -1,19 +1,23 @@
 <template>
   <div id="app">
-    <LandingPage />
+    <AppNavbar />
+
+    <!-- This will render the routed pages -->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import LandingPage from './components/LandingPage';
+import AppNavbar from './components/AppNavbar.vue'
+
 export default {
   name: 'App',
   components: {
-    LandingPage
+    AppNavbar,
   },
 };
 </script>
 
 <style>
-/* Add any styles you want here */
+  /*Global styles will apply here*/
 </style>
