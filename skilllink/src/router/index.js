@@ -1,35 +1,32 @@
-// src/router/index.js
+/**
+ * Set up routes for all pages in views
+ */
 import { createRouter, createWebHistory } from 'vue-router';
-import LandingPage from '../components/LandingPage.vue';
-import LoginPage from '../components/LoginPage.vue';
-import RegisterPage from '../components/RegisterPage.vue';
-import DashboardPage from '../components/DashboardPage.vue'; // Import the DashboardPage
+import HomePage from '../views/HomePage.vue';
+import LoginPage from '../views/LoginPage.vue';
+import RegisterPage from '../views/RegisterPage.vue';
+import DashboardJobseeker from '../views/DashboardJobseeker.vue';
+import DashboardEmployer from '../views/DashboardEmployer.vue';
+import ProfileEmployer from '../views/ProfileEmployer.vue';
+import ProfileJobseeker from '../views/ProfileJobseeker.vue'
+//import JobList from '../views/JobList.vue';
+//import JobDetails from '../views/JobDetails.vue';
 
 const routes = [
-  { path: '/', component: LandingPage },
+  { path: '/', component: HomePage },
   { path: '/login', component: LoginPage },
-  { path: '/signup', component: RegisterPage },
-  {
-    path: '/dashboard',
-    component: DashboardPage,
-    meta: { requiresAuth: true } // Add meta field to ensure only logged-in users can access this route
-  },
+  { path: '/register', component: RegisterPage },
+  { path: '/dashboard/jobseeker', component: DashboardJobseeker },
+  { path: '/dashboard/employer', component: DashboardEmployer },
+  { path: '/profile/jobseeker', component: ProfileJobseeker },
+  { path: '/profile/employer', component: ProfileEmployer },
+  //{ path: '/jobs', component: JobList },
+  //{ path: '/jobs/:id', component: JobDetails },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-});
-
-// Optional: Add navigation guard for authenticated routes
-router.beforeEach((to, from, next) => {
-  const isLoggedIn = !!localStorage.getItem('userToken'); // Check for user token on local storage
-  if (to.matched.some(record => record.meta.requiresAuth) && !isLoggedIn) {
-    // If route requires authentication and user is not logged in, redirect to login
-    next('/login');
-  } else {
-    next();
-  }
 });
 
 export default router;
