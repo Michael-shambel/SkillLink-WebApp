@@ -80,7 +80,7 @@ export default {
 
 <style scoped>
 .hero {
-  height: 90vh;
+  height: 100vh;
   background: url('../assets/background-image.jpg') no-repeat center center/cover;
 }
 </style>
