@@ -364,6 +364,55 @@ def search_jobseekers():
     except requests.RequestException as e:
         print(f"Failed to search job seekers: {e}")
 
+def update_job_post():
+    if not EMPLOYER_TOKEN:
+        print("Please login as an employer first.")
+        return
+    
+    job_id = input("Enter the Job ID you want to update: ")
+    print("Update Job Post (leave blank to keep current value)")
+    title = input("Enter new job title: ")
+    description = input("Enter new job description: ")
+    location = input("Enter new job location: ")
+    skills_required = input("Enter new required skills: ")
+    experience_required = input("Enter new required experience: ")
+
+    data = {}
+    if title:
+        data["title"] = title
+    if description:
+        data["description"] = description
+    if location:
+        data["location"] = location
+    if skills_required:
+        data["skills_required"] = skills_required
+    if experience_required:
+        data["experience_required"] = experience_required
+    
+    try:
+        headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
+        response = requests.patch(f"{BASE_URL}job-posts/{job_id}/", json=data, headers=headers)
+        response.raise_for_status()
+        print("Job post updated successfully.")
+        print("Response:", response.json())
+    except requests.RequestException as e:
+        print(f"Failed to update job post: {e}")
+
+def delete_job_post():
+    if not EMPLOYER_TOKEN:
+        print("Please login as an employer first.")
+        return
+    
+    job_id = input("Enter the Job ID you want to delete: ")
+    
+    try:
+        headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
+        response = requests.delete(f"{BASE_URL}job-posts/{job_id}/", headers=headers)
+        response.raise_for_status()
+        print("Job post deleted successfully.")
+    except requests.RequestException as e:
+        print(f"Failed to delete job post: {e}")
+
 def main():
     while True:
         print("\n1. Register")
@@ -380,7 +429,9 @@ def main():
         print("12. View Applications")
         print("13. Search Job Seekers")
         print("14. Rate and Review a Job Seeker")
-        print("15. Exit")
+        print("15. Update Job Post")
+        print("16. Delete Job Post")
+        print("17. Exit")
 
         choice = input("Enter your Choice: ")
 
@@ -413,6 +464,10 @@ def main():
         elif choice == '14':
             rate_and_review_jobseeker()
         elif choice == '15':
+            update_job_post()
+        elif choice == '16':
+            delete_job_post()
+        elif choice == '17':
             print("Exiting...")
             break
         else:
