@@ -24,7 +24,7 @@ class JobPost(models.Model):
 
 class Application(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'pending'),
+        ('pending', 'Pending'),
         ('reviewed', 'Reviewed'),
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected'),

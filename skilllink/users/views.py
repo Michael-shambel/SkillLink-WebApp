@@ -3,9 +3,10 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer, JobSeekerProfileSerializer, EmployerProfileSerializer, TokenSerializer
-from .models import JobSeekerProfile, EmployerProfile
+from .serializers import UserSerializer, JobSeekerProfileSerializer, EmployerProfileSerializer, TokenSerializer, JobSeekerReviewSerializer, JobSeekerProfileDetailSerializer
+from .models import JobSeekerProfile, EmployerProfile, JobSeekerReview
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 
 User = get_user_model()
 
@@ -86,6 +87,25 @@ class JobSeekerProfileViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return JobSeekerProfileDetailSerializer
+        return self.serializer_class
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def review(self, request, pk=None):
+        job_seeker = self.get_object()
+        employer = request.user
+
+        if not employer.is_employer:
+            return Response({"error": "Only employers can leave reviews"}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = JobSeekerReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(employer=employer, job_seeker=job_seeker)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class EmployerProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -119,3 +139,8 @@ class JobSeekerSearchViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.user.is_employer:
             return JobSeekerProfile.objects.all()
         return JobSeekerProfile.objects.none()
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return JobSeekerProfileDetailSerializer
+        return self.serializer_class
