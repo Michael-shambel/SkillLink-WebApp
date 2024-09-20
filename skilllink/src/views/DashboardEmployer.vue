@@ -36,6 +36,7 @@
       </div>
 
       <div class="mb-3">
+        <label for="skill" class="form-label">Skills</label>
         <input
           type="text"
           class="form-control"
