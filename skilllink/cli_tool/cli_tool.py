@@ -140,7 +140,7 @@ def update_jobseeker_profile():
     
     try:
         headers = {"Authorization": f"Token {JOBSEEKER_TOKEN}"}
-        response = requests.patch(f"{BASE_URL}jobseekers/", json=data, headers=headers)
+        response = requests.patch(f"{BASE_URL}jobseekers/1/", json=data, headers=headers)
         response.raise_for_status()
         print("Jobseeker profile updated successfully.")
         print("Response:", response.json())
@@ -213,11 +213,15 @@ def post_job():
     print("Post a Job")
     title = input("Enter job title: ")
     description = input("Enter job description: ")
+    skills_required = input("Enter required skills: ")
+    experience_required = input("Enter required experience: ")
     location = input("Enter job location: ")
 
     data = {
         "title": title,
         "description": description,
+        "skills_required": skills_required,
+        "experience_required": experience_required,
         "location": location
     }
     
@@ -229,6 +233,8 @@ def post_job():
         print("Response:", response.json())
     except requests.RequestException as e:
         print(f"Failed to post job: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print("Error details:", e.response.text)
 
 def search_jobs():
     if not JOBSEEKER_TOKEN:
