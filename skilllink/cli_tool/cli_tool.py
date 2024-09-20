@@ -80,7 +80,7 @@ def create_jobseeker_profile():
     }
     try:
         headers = {"Authorization": f"Token {JOBSEEKER_TOKEN}"}
-        response = requests.post(f"{BASE_URL}jobseeker/", json=data, headers=headers)
+        response = requests.post(f"{BASE_URL}jobseekers/", json=data, headers=headers)
         response.raise_for_status()
         print("Jobseeker profile created successfully.")
         print(response.json())
@@ -107,7 +107,7 @@ def create_employer_profile():
 
     try:
         headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
-        response = requests.post(f"{BASE_URL}employer/", json=data, headers=headers)
+        response = requests.post(f"{BASE_URL}employers/", json=data, headers=headers)
         response.raise_for_status()
         print("Employer profile created successfully.")
         print(response.json())
@@ -140,7 +140,7 @@ def update_jobseeker_profile():
     
     try:
         headers = {"Authorization": f"Token {JOBSEEKER_TOKEN}"}
-        response = requests.patch(f"{BASE_URL}jobseeker/", json=data, headers=headers)
+        response = requests.patch(f"{BASE_URL}jobseekers/", json=data, headers=headers)
         response.raise_for_status()
         print("Jobseeker profile updated successfully.")
         print("Response:", response.json())
@@ -170,7 +170,7 @@ def update_employer_profile():
     
     try:
         headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
-        response = requests.patch(f"{BASE_URL}employer/", json=data, headers=headers)
+        response = requests.patch(f"{BASE_URL}employers/", json=data, headers=headers)
         response.raise_for_status()
         print("Employer profile updated successfully.")
         print("Response:", response.json())
@@ -184,7 +184,7 @@ def view_jobseeker_profile():
     
     try:
         headers = {"Authorization": f"Token {JOBSEEKER_TOKEN}"}
-        response = requests.get(f"{BASE_URL}jobseeker/", headers=headers)
+        response = requests.get(f"{BASE_URL}jobseekers/", headers=headers)
         response.raise_for_status()
         print("Jobseeker Profile Details:")
         print(response.json())
@@ -198,7 +198,7 @@ def view_employer_profile():
     
     try:
         headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
-        response = requests.get(f"{BASE_URL}employer/", headers=headers)
+        response = requests.get(f"{BASE_URL}employers/", headers=headers)
         response.raise_for_status()
         print("Employer Profile Details:")
         print(response.json())
@@ -223,7 +223,7 @@ def post_job():
     
     try:
         headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
-        response = requests.post(f"{BASE_URL}jobs/", json=data, headers=headers)
+        response = requests.post(f"{BASE_URL}job-posts/", json=data, headers=headers)
         response.raise_for_status()
         print("Job posted successfully.")
         print("Response:", response.json())
