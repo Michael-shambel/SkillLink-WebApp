@@ -7,3 +7,4 @@ pip install djangorestframework
 pip install djangorestframework-simplejwt
 pip install Pillow (handle the image processing)
 pip3 install django-filter
+pip3 install requests

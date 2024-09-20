@@ -109,3 +109,16 @@ class EmployerProfile(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+class JobSeekerReview(models.Model):
+    employer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='reviews_given')
+    job_seeker = models.ForeignKey(JobSeekerProfile, on_delete=models.CASCADE, related_name='reviews_received')
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # 1 to 5 rating
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('employer', 'job_seeker')
+
+    def __str__(self):
+        return f"Review for {self.job_seeker} by {self.employer}"

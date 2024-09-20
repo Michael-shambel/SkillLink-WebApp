@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
-from .models import JobSeekerProfile, EmployerProfile
+from .models import JobSeekerProfile, EmployerProfile, JobSeekerReview
 
 User = get_user_model()
 
@@ -32,3 +32,24 @@ class TokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Token
         fields = ['key']
+
+class JobSeekerReviewSerializer(serializers.ModelSerializer):
+    employer = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = JobSeekerReview
+        fields = ['id', 'employer', 'rating', 'comment', 'created_at']
+        read_only_fields = ['id', 'employer', 'created_at']
+
+class JobSeekerProfileDetailSerializer(JobSeekerProfileSerializer):
+    reviews = JobSeekerReviewSerializer(many=True, read_only=True, source='reviews_received')
+    average_rating = serializers.SerializerMethodField()
+
+    class Meta(JobSeekerProfileSerializer.Meta):
+        fields = JobSeekerProfileSerializer.Meta.fields + ['reviews', 'average_rating']
+
+    def get_average_rating(self, obj):
+        reviews = obj.reviews_received.all()
+        if reviews:
+            return sum(review.rating for review in reviews) / len(reviews)
+        return None
