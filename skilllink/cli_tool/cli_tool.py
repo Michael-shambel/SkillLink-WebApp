@@ -235,6 +235,8 @@ def post_job():
         print(f"Failed to post job: {e}")
         if hasattr(e, 'response') and e.response is not None:
             print("Error details:", e.response.text)
+        print("Sent data:", data)
+        print("Headers:", headers)
 
 def search_jobs():
     if not JOBSEEKER_TOKEN:
