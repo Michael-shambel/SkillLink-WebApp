@@ -7,6 +7,7 @@ from .serializers import UserSerializer, JobSeekerProfileSerializer, EmployerPro
 from .models import JobSeekerProfile, EmployerProfile, JobSeekerReview
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 
 User = get_user_model()
 
@@ -69,7 +70,22 @@ class JobSeekerProfileViewSet(viewsets.ModelViewSet):
         if user.is_jobseeker:
             return JobSeekerProfile.objects.filter(user=user)
         return JobSeekerProfile.objects.none()
-    
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = queryset.first()
+        if obj is None:
+            raise Http404("JobSeekerProfile not found")
+        return obj
+
     # def perform_create(self, serializer):
     #     user = self.request.user
     #     if not user.is_jobseeker:
@@ -106,6 +122,13 @@ class JobSeekerProfileViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user != request.user:
+            raise PermissionDenied("You don't have permission to delete this profile.")
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class EmployerProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -127,6 +150,29 @@ class EmployerProfileViewSet(viewsets.ModelViewSet):
         serializer.save(user=user)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user != request.user:
+            raise PermissionDenied("You don't have permission to delete this profile.")
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = queryset.first()
+        if obj is None:
+            raise Http404("EmployerProfile not found")
+        return obj
+
 
 class JobSeekerSearchViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = JobSeekerProfile.objects.all()
