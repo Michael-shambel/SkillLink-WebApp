@@ -477,44 +477,6 @@ def update_application_status():
             print(f"Status code: {e.response.status_code}")
             print(f"Response content: {e.response.text}")
 
-# def delete_jobseeker_profile():
-#     if not JOBSEEKER_TOKEN:
-#         print("Please login as a jobseeker first.")
-#         return
-    
-#     confirm = input("Are you sure you want to delete your profile? This action cannot be undone. (y/n): ")
-#     if confirm.lower() != 'y':
-#         print("Profile deletion cancelled.")
-#         return
-    
-#     try:
-#         headers = {"Authorization": f"Token {JOBSEEKER_TOKEN}"}
-#         response = requests.delete(f"{BASE_URL}jobseekers/", headers=headers)
-#         response.raise_for_status()
-#         print("Jobseeker profile deleted successfully.")
-#         JOBSEEKER_TOKEN = None
-#     except requests.RequestException as e:
-#         print(f"Failed to delete jobseeker profile: {e}")
-
-# def delete_employer_profile():
-#     if not EMPLOYER_TOKEN:
-#         print("Please login as an employer first.")
-#         return
-    
-#     confirm = input("Are you sure you want to delete your profile? This action cannot be undone. (y/n): ")
-#     if confirm.lower() != 'y':
-#         print("Profile deletion cancelled.")
-#         return
-    
-#     try:
-#         headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
-#         response = requests.delete(f"{BASE_URL}employers/", headers=headers)
-#         response.raise_for_status()
-#         print("Employer profile deleted successfully.")
-#         EMPLOYER_TOKEN = None
-#     except requests.RequestException as e:
-#         print(f"Failed to delete employer profile: {e}")
-
 def main():
     while True:
         print("\n1. Register")
