@@ -19,13 +19,13 @@ class UserViewSet(viewsets.ViewSet):
         password = request.data.get('password')
         is_employer = request.data.get('is_employer', False)
         is_jobseeker = request.data.get('is_jobseeker', False)
-    
+
         if not email or not password:
             return Response({'error': 'Email and Password Required'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         if User.objects.filter(email=email).exists():
             return Response({'error': 'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         user = User.objects.create_user(
             email=email,
             password=password,
@@ -39,7 +39,7 @@ class UserViewSet(viewsets.ViewSet):
             'user': serializer.data,
             'token': token.key
         }, status=status.HTTP_201_CREATED)
-    
+
 
 class TokenViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -56,7 +56,15 @@ class TokenViewSet(viewsets.ViewSet):
         if user.check_password(password):
             token, _ = Token.objects.get_or_create(user=user)
             serializer = TokenSerializer(token)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({
+                'token': token.key,
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'is_employer': user.is_employer,
+                    'is_jobseeker': user.is_jobseeker,
+                }
+            }, status=status.HTTP_200_OK)
 
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -91,12 +99,12 @@ class JobSeekerProfileViewSet(viewsets.ModelViewSet):
     #     if not user.is_jobseeker:
     #         raise PermissionDenied('Only job seekers can create a profile')
     #     serializer.save(user=user)
-    
+
     def create(self, request, *args, **kwargs):
         user = request.user
         if not user.is_jobseeker:
             return Response({'error': 'Only job seekers can create a profile'}, status=status.HTTP_403_FORBIDDEN)
-        
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
@@ -139,12 +147,12 @@ class EmployerProfileViewSet(viewsets.ModelViewSet):
         if user.is_employer:
             return EmployerProfile.objects.filter(user=user)
         return EmployerProfile.objects.none()
-    
+
     def create(self, request, *args, **kwargs):
         user = request.user
         if not user.is_employer:
             return Response({'error': 'Only employers can create a profile'}, status=status.HTTP_403_FORBIDDEN)
-        
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)

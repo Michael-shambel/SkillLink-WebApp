@@ -215,7 +215,7 @@ components: {
 
 <style scoped>
 .employer-dashboard {
-max-width: 800px;
-margin: 0 auto;
+  max-width: 800px;
+  margin: 0 auto;
 }
 </style>

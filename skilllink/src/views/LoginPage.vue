@@ -43,12 +43,12 @@ import apiClient from '../plugins/axios';
 
 export default {
   data() {
-      return {
+    return {
       email: '',
       password: '',
       successMessage: '',
       errorMessage: '',
-      };
+    };
   },
   methods: {
     async login() {
@@ -61,10 +61,31 @@ export default {
         this.successMessage = 'Login successful!';
         this.errorMessage = '';
 
-        localStorage.setItem('auth_token', response.data.key);
+        const token = response.data.token;
+        const userData = response.data.user;
 
-        this.$router.push('/dashboard/jobseeker');
+        if (!token) {
+        throw new Error('Token not found in response');
+        }
+
+        // Store the token in localStorage
+        localStorage.setItem('auth_token', token);
+
+        // Check if userData exists and redirect based on user type
+        if (userData) {
+          if (userData.is_employer) {
+            this.$router.push('/dashboard/employer');
+          } else if (userData.is_jobseeker) {
+            this.$router.push('/dashboard/jobseeker');
+          } else {
+            this.errorMessage = 'Unknown user type';
+          }
+        } else {
+          this.errorMessage = 'Invalid user data';
+        }
       } catch (error) {
+        // Log the error to the console for debugging
+        console.error('Login error:', error.response ? error.response.data : error.message);
         this.errorMessage = 'Invalid email or password';
         this.successMessage = '';
       }
@@ -75,8 +96,8 @@ export default {
 
 <style scoped>
 .login-page {
-max-width: 400px;
-margin: 0 auto;
-padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
 }
 </style>
