@@ -8,6 +8,7 @@ from .models import JobSeekerProfile, EmployerProfile, JobSeekerReview
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from django.http import Http404
 
 User = get_user_model()
 
@@ -110,7 +111,11 @@ class JobSeekerProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def review(self, request, pk=None):
-        job_seeker = self.get_object()
+        try:
+            job_seeker = JobSeekerProfile.objects.get(pk=pk)
+        except JobSeekerProfile.DoesNotExist:
+            raise Http404("JobSeekerProfile not found")
+
         employer = request.user
 
         if not employer.is_employer:
@@ -121,7 +126,7 @@ class JobSeekerProfileViewSet(viewsets.ModelViewSet):
             serializer.save(employer=employer, job_seeker=job_seeker)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.user != request.user:
