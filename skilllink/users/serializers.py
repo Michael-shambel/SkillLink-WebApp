@@ -6,17 +6,32 @@ from .models import JobSeekerProfile, EmployerProfile, JobSeekerReview
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    User serializer for authentication and registration.
+    the model is User, which is a custom user model.
+    and the serialized fields are email, is_employer, and is_jobseeker.
+    """
     class Meta:
         model = User
         fields = ['email', 'is_employer', 'is_jobseeker']
 
 class JobSeekerProfileSerializer(serializers.ModelSerializer):
+    """
+    Job seeker profile serializer for the job seeker profile model.
+    the model is JobSeekerProfile.
+    the serialized fields are id, user, first_name, last_name, profile_picture, skills, experience, and phone_number.
+    the read only fields are id and user.
+    """
     class Meta:
         model = JobSeekerProfile
         fields = ['id', 'user', 'first_name', 'last_name', 'profile_picture', 'skills', 'experience', 'phone_number']
         read_only_fields = ['id', 'user']
     
     def validate_profile_picture(self, value):
+        """
+        validate the profile picture of the job seeker.
+        the profile picture should be less than 5MB.
+        """
         if value:
             if value.size > 5 * 1024 * 1024:
                 raise serializers.ValidationError("Image file too large ( > 5MB )")
