@@ -9,8 +9,9 @@ import DashboardJobseeker from '../views/DashboardJobseeker.vue';
 import DashboardEmployer from '../views/DashboardEmployer.vue';
 import ProfileEmployer from '../views/ProfileEmployer.vue';
 import ProfileJobseeker from '../views/ProfileJobseeker.vue'
+import JobApplicants from '@/components/JobApplicants.vue';
+import ApplicationDetails from '../components/ApplicationDetails.vue';
 //import JobList from '../views/JobList.vue';
-//import JobDetails from '../views/JobDetails.vue';
 
 const routes = [
   { path: '/', component: HomePage },
@@ -20,8 +21,16 @@ const routes = [
   { path: '/dashboard/employer', component: DashboardEmployer },
   { path: '/profile/jobseeker', component: ProfileJobseeker },
   { path: '/profile/employer', component: ProfileEmployer },
+  {
+    path: '/dashboard/employer/job-posts/:job_post_id/applicants',
+    component: JobApplicants,
+  },
+  /*{
+    path: '/applications/:id',
+    component: ApplicationDetails,
+  }*/
+
   //{ path: '/jobs', component: JobList },
-  //{ path: '/jobs/:id', component: JobDetails },
 ];
 
 const router = createRouter({

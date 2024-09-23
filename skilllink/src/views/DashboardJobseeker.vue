@@ -23,36 +23,16 @@
     <div class="available-jobs">
       <h3>Available Jobs</h3>
       <div v-if="jobs.length">
-        <ul class="list-group">
-          <li
-            v-for="job in jobs"
-            :key="job.id"
-            class="list-group-item d-flex justify-content-between align-items-center"
-          >
-            <span>{{ job.title }} - {{ job.location }}</span>
-            <button class="btn btn-sm btn-primary" @click="applyToJob(job.id)">
-              Apply
-            </button>
-          </li>
-        </ul>
+        <JobCard
+          v-for="job in jobs"
+          :key="job.id"
+          :job="job"
+          @apply="applyToJob"
+        />
       </div>
       <div v-else>
         <p>No jobs found.</p>
       </div>
-    </div>
-
-    <!-- Applied Jobs Section -->
-    <div class="applied-jobs mt-5">
-      <h3>Applied Jobs</h3>
-      <ul class="list-group">
-        <li
-          v-for="application in appliedJobs"
-          :key="application.id"
-          class="list-group-item d-flex justify-content-between align-items-center"
-        >
-          <span>{{ application.job_title }} - {{ application.status }}</span>
-        </li>
-      </ul>
     </div>
   </div>
 </template>
@@ -62,10 +42,14 @@
  * Fetch available jobs
  * Fetch jobs that the user has applied to
  * Search for jobs based on user input
+ *  1. Get the token from local storage
+ *  2. Send a GET request to the job-posts endpoint with the token in the headers
  * Apply to a job
+ * If Authorization header(token) is missing/invalid throw a 401 error
  */
 import apiClient from '../plugins/axios';
 import NavbarDashboard from '../components/NavbarDashboard.vue';
+import JobCard from '../components/JobCard.vue';
 
 export default {
   data() {
@@ -76,53 +60,54 @@ export default {
     };
   },
   mounted() {
-    this.fetchAvailableJobs();
-    this.fetchAppliedJobs();
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      this.$router.push('/login');
+    } else {
+      this.findJobs();
+    }
+  },
+  computed: {
+    token() {
+      return localStorage.getItem('auth_token');
+    },
   },
   methods: {
-    async fetchAvailableJobs() {
+    async findJobs() {
       try {
-        const response = await apiClient.get('/job-posts/');
+        // const token = localStorage.getItem('auth_token');
+        if (!this.token) {
+          throw new Error("No token found. Please login");
+        }
+        const response = await apiClient.get(
+          `/job-posts/?search=${this.searchQuery}`,
+          {
+            headers: {
+              Authorization: `Token ${this.token}`,
+            },
+          }
+        );
         this.jobs = response.data;
       } catch (error) {
-        console.error('Error fetching jobs:', error);
-      }
-    },
-    async fetchAppliedJobs() {
-      try {
-        const response = await apiClient.get('/applications/', {
-          headers: {
-            Authorization: `Token ${localStorage.getItem('auth_token')}`,
-          },
-        });
-        this.appliedJobs = response.data;
-      } catch (error) {
-        console.error('Error fetching applied jobs:', error);
-      }
-    },
-    async searchJobs() {
-      try {
-        const response = await apiClient.get(`/job-posts/?search=${this.searchQuery}`);
-        this.jobs = response.data;
-      } catch (error) {
-        console.error('Error searching jobs:', error);
+        console.error('Error finding jobs:', error.response ? error.response.data : error.message);
       }
     },
     async applyToJob(jobId) {
       try {
         await apiClient.post(`/job-posts/${jobId}/apply/`, {}, {
           headers: {
-            Authorization: `Token ${localStorage.getItem('auth_token')}`,
+            Authorization: `Token ${this.token}`,
           },
         });
         alert('Successfully applied to job!');
       } catch (error) {
-        console.error('Error applying to job:', error);
+        console.error('Error applying to job:', error.response ? error.response.data : error.message);
       }
     },
   },
   components: {
     NavbarDashboard,
+    JobCard,
   },
 };
 </script>
