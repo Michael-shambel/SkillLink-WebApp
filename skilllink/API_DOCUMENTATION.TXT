@@ -295,3 +295,35 @@ EXAMPLE RESPONSE:
     "phone_number": "0546546546"
 }
 
+----------------------------------------------------------------------------------------------------
+search-jobs/:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/search-jobs/
+
+DESCRIPTION:
+This endpoint allows you to search for jobs.
+
+PARAMETERS:
+params:
+type: string
+description: the title of the job.
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "title": "Python Developer"
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "title": "Python Developer",
+    "description": "This is a Python Developer job",
+    "location": "USA",
+    "salary": "100000"
+}
+
+
