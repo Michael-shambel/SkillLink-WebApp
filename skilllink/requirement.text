@@ -1,0 +1,20 @@
+django-admin --version == 5.1.1
+mysql version == mysql  Ver 8.0.39-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
+mysqlclient == mysqlclient-2.2.4
+DO NOT FORGET TO CONFIGURE YOUR DATABASES BASED ON the setting i configured
+installed djangorestframework-3.15.2
+DO NOT FORGET TO CONFIGURE YOUR DATABASES BASED ON the setting i configured
+pip install djangorestframework
+pip install djangorestframework-simplejwt
+pip install Pillow (handle the image processing)
+pip3 install django-filter
+pip install django-cors-headers
+
+FRONTEND INSTALLATIONS
+======================
+npm install vue@cli
+npm install bootstrap@5
+npm install vue-router
+npm install axios
+npm install @fortawesome/fontawesome-free
+npm install bootstrap-icons

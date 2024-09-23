@@ -1,0 +1,297 @@
+=====================================================================
+INTRODUCTION
+=====================================================================
+this project is a REST API for a job portal platform called SkillLink.
+It allows users to 
+register,
+ login,
+create profiles,
+post jobs,
+search for jobs,
+apply for jobs,
+delete jobs posted by the user,
+check the job applications job seekers have applied for,
+ and
+receive recommendations for jobs and skills.
+
+
+=====================================================================
+TECHNOLOGIES USED
+=====================================================================
+
+The API is built using the Django REST Framework (DRF),
+utilizes Django's built-in authentication and authorization mechanisms and MySQL database.
+
+This API documentation provides a detailed overview of the API endpoints and their functionalities.
+The API is designed to facilitate various interactions between the frontend and backend components of the SkillLink platform.
+Below is a summary of the key endpoints and their purposes:
+
+
+=====================================================================
+AUTHENTICATION
+=====================================================================
+
+The API uses token-based authentication.
+this is the token that will be used to authenticate your requests:
+which is automatically generated when you register and expires after 24 hours.
+
+To authenticate your requests, you need to include the token in the Authorization header as follows:
+
+----------------------------------------------------------------------------------------------------
+Authorization: Token <your_token_here>
+----------------------------------------------------------------------------------------------------
+
+=====================================================================
+BASE URL
+=====================================================================
+
+The base URL for the API is:
+
+development:
+----------------------------------------------------------------------------------------------------
+https://localhost:8000 /api/
+----------------------------------------------------------------------------------------------------
+
+
+=====================================================================
+ENDPOINTS DOCUMENTATION
+=====================================================================
+
+----------------------------------------------------------------------------------------------------
+METHODS
+----------------------------------------------------------------------------------------------------
+
+GET:
+This method is used to retrieve data from the API.
+
+POST:
+This method is used to create new data in the API.
+
+PUT/PATCH:
+This method is used to update existing data in the API.
+
+DELETE:
+This method is used to delete data from the API.
+
+----------------------------------------------------------------------------------------------------
+URLS
+----------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------
+register:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/register/
+
+DESCRIPTION:
+This endpoint allows you to register a new user.
+
+PARAMETERS:
+email:
+type: string
+description: the email of the user.
+required: true
+
+password:
+type: string
+description: the password of the user.
+required: true
+
+is_employer:
+type: boolean
+description: whether the user is an employer or a job seeker.
+required: true/false
+
+
+EXAMPLE REQUEST:
+
+{
+    "email": "test@example.com",
+    "password": "test123",
+    "is_employer": true,
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "email": "test@example.com",
+    "is_employer": true,
+}
+
+----------------------------------------------------------------------------------------------------
+token:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/token/
+
+DESCRIPTION:
+This endpoint allows you to get the token for the user.
+
+PARAMETERS:
+email:
+type: string
+description: the email of the user.
+required: true
+
+password:
+type: string
+description: the password of the user.
+
+EXAMPLE REQUEST:
+
+{
+    "email": "test@example.com",
+    "password": "test123",
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "token": "your_token_here"
+}
+
+----------------------------------------------------------------------------------------------------
+jobseekers:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/jobseekers/
+
+DESCRIPTION:
+This endpoint allows you to create a job seekers profile, update it, delete it, get it, and review it.
+
+CREATE JOB SEEKER PROFILE:
+PARAMETERS:
+first_name:
+type: string
+description: the first name of the job seeker.
+required: true
+
+last_name:
+type: string
+description: the last name of the job seeker.
+required: true
+
+skills:
+type: string
+description: the skills of the job seeker.
+required: true
+
+experience:
+type: string
+description: the experience of the job seeker.
+required: true
+
+phone_number:
+type: string
+description: the phone number of the job seeker.
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "first_name": "John",
+    "last_name": "Doe", 
+    "skills": "Python, Django, REST API",
+    "experience": "2 years",
+    "phone_number": "0546546546"
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "skills": "Python, Django, REST API",
+    "experience": "2 years",
+    "phone_number": "0546546546"
+}
+NOTE:
+other operations like update, delete, get are similar to the above ones, just change the method and the url.
+
+----------------------------------------------------------------------------------------------------
+employers:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/employers/
+
+DESCRIPTION:
+This endpoint allows you to create an employer profile, update it, delete it and get it.
+
+CREATE EMPLOYER PROFILE:
+PARAMETERS:
+first_name:
+type: string
+description: the first name of the employer.
+required: true
+
+last_name:
+type: string
+description: the last name of the employer.
+required: true
+
+location:
+type: string
+description: the location of the employer.
+required: true
+
+phone_number:
+type: string
+description: the phone number of the employer.
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "first_name": "John",
+    "last_name": "Doe",
+    "location": "USA",
+    "phone_number": "0546546546"
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "location": "USA",
+    "phone_number": "0546546546"
+}
+
+NOTE:
+other operations like update, delete, get are similar to the above ones, just change the method and the url.
+
+----------------------------------------------------------------------------------------------------
+search-jobseekers/:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/search-jobseekers/
+
+DESCRIPTION:
+This endpoint allows you to search for job seekers.
+
+PARAMETERS:
+params:
+type: string
+description: the skills of the job seekers.
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "skills": "Python, Django, REST API"
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "skills": "Python, Django, REST API",
+    "experience": "2 years",
+    "phone_number": "0546546546"
+}
+
