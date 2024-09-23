@@ -40,7 +40,7 @@
 - Version Control: GitHub
 
 
-### Usage:
+8. **Usage:**
 **For Employers:**
 - Register as an employer.
 - Log in and complete your profile.
@@ -52,3 +52,22 @@
 - Log in and complete your profile with skills and experience.
 - Browse job postings based on location and filters.
 - Apply for jobs or communicate with employers directly.
+
+9. **Technology Stack**
+- Backend: Django (Python), Django REST Framework
+- Frontend: Vue.js
+- Database: MySQL
+- Geolocation: GeoDjango, Google Maps API
+- Messaging: Django Channels (for real-time messaging)
+- Calendar Integration: Google Calendar API
+- Version Control: GitHub
+
+**DONE BY:**
+1. Michael Shambel Tefera
+- Back-end engineer
+[LinkedIn](https://www.linkedin.com/in/michael-shambel-718537229?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app)
+
+
+2. Fredrick Mbanga
+- Fullstack Engineer
+[LinkedIn](https://www.linkedin.com/in/fredrick-mbanga-046755210?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app)
