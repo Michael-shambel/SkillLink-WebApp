@@ -327,3 +327,224 @@ EXAMPLE RESPONSE:
 }
 
 
+// ... existing documentation ...
+
+----------------------------------------------------------------------------------------------------
+job-posts:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/job-posts/
+
+DESCRIPTION:
+This endpoint allows employers to create, update, delete, and view job posts.
+
+CREATE JOB POST:
+METHOD: POST
+
+PARAMETERS:
+title:
+type: string
+description: the title of the job post.
+required: true
+
+description:
+type: string
+description: detailed description of the job.
+required: true
+
+skills_required:
+type: string
+description: skills required for the job.
+required: true
+
+experience_required:
+type: string
+description: experience required for the job.
+required: true
+
+location:
+type: string
+description: location of the job.
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "title": "Senior Python Developer",
+    "description": "We are looking for an experienced Python developer...",
+    "skills_required": "Python, Django, REST API",
+    "experience_required": "5+ years",
+    "location": "New York, NY"
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "title": "Senior Python Developer",
+    "description": "We are looking for an experienced Python developer...",
+    "skills_required": "Python, Django, REST API",
+    "experience_required": "5+ years",
+    "location": "New York, NY",
+    "employer": 1,
+    "created_at": "2023-06-01T12:00:00Z"
+}
+
+UPDATE JOB POST:
+METHOD: PATCH
+URL: https://localhost:8000/api/job-posts/{id}/
+
+DELETE JOB POST:
+METHOD: DELETE
+URL: https://localhost:8000/api/job-posts/{id}/
+
+VIEW JOB POSTS:
+METHOD: GET
+URL: https://localhost:8000/api/job-posts/
+
+----------------------------------------------------------------------------------------------------
+applications:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/applications/
+
+DESCRIPTION:
+This endpoint allows job seekers to apply for jobs and view their applications. Employers can view and update application statuses.
+
+APPLY FOR A JOB:
+METHOD: POST
+
+PARAMETERS:
+job_post:
+type: integer
+description: the ID of the job post being applied to.
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "job_post": 1
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "job_post": 1,
+    "applicant": 2,
+    "status": "pending",
+    "applied_at": "2023-06-01T14:30:00Z"
+}
+
+VIEW APPLICATIONS:
+METHOD: GET
+
+UPDATE APPLICATION STATUS (for employers):
+METHOD: PATCH
+URL: https://localhost:8000/api/applications/{id}/
+
+PARAMETERS:
+status:
+type: string
+description: the new status of the application (pending, reviewed, accepted, rejected).
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "status": "accepted"
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "job_post": 1,
+    "applicant": 2,
+    "status": "accepted",
+    "applied_at": "2023-06-01T14:30:00Z",
+    "updated_at": "2023-06-02T10:00:00Z"
+}
+
+----------------------------------------------------------------------------------------------------
+jobseekers/{id}/review:
+----------------------------------------------------------------------------------------------------
+URL:
+https://localhost:8000/api/jobseekers/{id}/review/
+
+DESCRIPTION:
+This endpoint allows employers to rate and review job seekers.
+
+METHOD: POST
+
+PARAMETERS:
+rating:
+type: integer
+description: the rating given to the job seeker (1-5).
+required: true
+
+comment:
+type: string
+description: a review comment for the job seeker.
+required: true
+
+EXAMPLE REQUEST:
+
+{
+    "rating": 5,
+    "comment": "Excellent candidate with strong skills and work ethic."
+}
+
+EXAMPLE RESPONSE:
+
+{
+    "id": 1,
+    "jobseeker": 2,
+    "employer": 1,
+    "rating": 5,
+    "comment": "Excellent candidate with strong skills and work ethic.",
+    "created_at": "2023-06-03T09:15:00Z"
+}
+
+=====================================================================
+ERROR HANDLING
+=====================================================================
+
+The API uses standard HTTP status codes to indicate the success or failure of requests:
+
+200 OK: The request was successful.
+201 Created: A new resource was successfully created.
+204 No Content: The request was successful, but there's no content to send back.
+400 Bad Request: The request was invalid or cannot be served.
+401 Unauthorized: Authentication failed or user doesn't have permissions for the requested operation.
+404 Not Found: The requested resource could not be found.
+500 Internal Server Error: The server encountered an unexpected condition that prevented it from fulfilling the request.
+
+Error responses will typically include a JSON object with more details about the error:
+
+{
+    "error": "Error message here"
+}
+
+=====================================================================
+RATE LIMITING
+=====================================================================
+
+To prevent abuse, the API implements rate limiting. The current limits are:
+
+- 100 requests per minute for authenticated users
+- 20 requests per minute for unauthenticated users
+
+If you exceed these limits, you'll receive a 429 Too Many Requests response.
+
+=====================================================================
+VERSIONING
+=====================================================================
+
+The current version of the API is v1. All endpoints should be prefixed with /api/v1/.
+
+=====================================================================
+SUPPORT
+=====================================================================
+
+If you encounter any issues or have questions about the API, please contact our support team at api-support@skilllink.com.
