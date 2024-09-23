@@ -1,4 +1,0 @@
-django-admin --version == 5.1.1
-mysql version == mysql  Ver 8.0.39-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
-mysqlclient == mysqlclient-2.2.4
-DO NOT FORGET TO CONFIGURE YOUR DATABASES BASED ON the setting i configured
