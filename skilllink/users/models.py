@@ -82,6 +82,16 @@ class JobSeekerProfile(models.Model):
     """
     this method will create a model for creating
     a model for job seeker profile
+    fields:
+        user: one to one field for the user model (custom user model)...
+        ...this will be used to link the job seeker profile to the user model....
+        ...the one to one field is used to ensure that there is only one job seeker profile for a user....
+        first_name: first name of the job seeker
+        last_name: last name of the job seeker
+        profile_picture: profile picture of the job seeker
+        skills: skills of the job seeker
+        experience: experience of the job seeker
+        phone_number: phone number of the job seeker
     """
 
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="jobseeker_profile")
@@ -99,6 +109,13 @@ class JobSeekerProfile(models.Model):
 class EmployerProfile(models.Model):
     """
     this method will create a profile for a employer
+    fields:
+        user: one to one field for the user model (custom user model)...
+        ...this will be used to link the employer profile to the user model....
+        ...the one to one field is used to ensure that there is only one employer profile for a user....
+        first_name: first name of the employer
+        last_name: last name of the employer
+        location: location of the employer
     """
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='employer_profile')
 

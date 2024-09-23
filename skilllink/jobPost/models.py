@@ -3,6 +3,11 @@ from users.models import CustomUser
 from django.utils import timezone
 
 class JobPost(models.Model):
+    """
+    Job post model for the job post object.
+    we use CustomUser model for the posted by field.
+    we use JobPostSerializer for the job post serializer.
+    """
     title = models.CharField(max_length=100)
     description = models.TextField()
     skills_required = models.CharField(max_length=255)
@@ -23,6 +28,12 @@ class JobPost(models.Model):
         ordering = ['-posted_on']
 
 class Application(models.Model):
+    """
+    Application model for the application object.
+    we use JobPost model for the job post field.
+    we use CustomUser model for the applicant field.
+    we use ApplicationSerializer for the application serializer.
+    """
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('reviewed', 'Reviewed'),

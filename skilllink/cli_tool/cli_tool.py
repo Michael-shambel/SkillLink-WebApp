@@ -153,10 +153,10 @@ def update_employer_profile():
         return
     
     print("Update Employer Profile")
-    first_name = input("Enter New First Name: ")
-    last_name = input("Enter New Last Name: ")
-    location = input("Enter New Street Address: ")
-    phone_number = input("Enter New Phone Number: ")
+    first_name = input("Enter New First Name (leave blank to keep current): ")
+    last_name = input("Enter New Last Name (leave blank to keep current): ")
+    location = input("Enter New Street Address (leave blank to keep current): ")
+    phone_number = input("Enter New Phone Number (leave blank to keep current): ")
 
     data = {}
     if first_name:
@@ -170,12 +170,15 @@ def update_employer_profile():
     
     try:
         headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
-        response = requests.patch(f"{BASE_URL}employers/", json=data, headers=headers)
+        response = requests.patch(f"{BASE_URL}employers/me/", json=data, headers=headers)
         response.raise_for_status()
         print("Employer profile updated successfully.")
         print("Response:", response.json())
     except requests.RequestException as e:
         print(f"Failed to update employer profile: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Status code: {e.response.status_code}")
+            print(f"Response content: {e.response.text}")
 
 def view_jobseeker_profile():
     if not JOBSEEKER_TOKEN:
@@ -283,12 +286,14 @@ def apply_for_job():
         print(f"Failed to apply for job: {e}")
 
 def view_applications():
-    if JOBSEEKER_TOKEN:
-        token = JOBSEEKER_TOKEN
-        user_type = "jobseeker"
-    elif EMPLOYER_TOKEN:
+    print("who are you?: 1) Employer 2) Jobseeker")
+    choice = input("Enter your choice: ")
+    if choice == '1':
         token = EMPLOYER_TOKEN
         user_type = "employer"
+    elif choice == '2':
+        token = JOBSEEKER_TOKEN
+        user_type = "jobseeker"
     else:
         print("Please login first.")
         return
@@ -303,14 +308,19 @@ def view_applications():
             print("No applications found.")
         else:
             for app in applications:
-                print(f"\nApplication ID: {app['id']}")
+                print(f"\nApplication ID: {app.get('id', 'N/A')}")
                 if user_type == "employer":
-                    print(f"Applicant: {app['applicant']['email']}")
-                print(f"Job: {app['job_post']['title']}")
-                print(f"Status: {app['status']}")
-                print(f"Applied at: {app['applied_at']}")
+                    applicant = app.get('applicant', {})
+                    print(f"Applicant: {applicant.get('email', 'N/A')}")
+                job_post = app.get('job_post', {})
+                print(f"Job: {job_post.get('title', 'N/A')}")
+                print(f"Status: {app.get('status', 'N/A')}")
+                print(f"Applied at: {app.get('applied_at', 'N/A')}")
     except requests.RequestException as e:
         print(f"Failed to retrieve applications: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Status code: {e.response.status_code}")
+            print(f"Response content: {e.response.text}")
 
 def rate_and_review_jobseeker():
     if not EMPLOYER_TOKEN:
@@ -343,6 +353,9 @@ def rate_and_review_jobseeker():
         print("Response:", response.json())
     except requests.RequestException as e:
         print(f"Failed to submit review: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Status code: {e.response.status_code}")
+            print(f"Response content: {e.response.text}")
 
 def search_jobseekers():
     if not EMPLOYER_TOKEN:
@@ -421,6 +434,49 @@ def delete_job_post():
     except requests.RequestException as e:
         print(f"Failed to delete job post: {e}")
 
+def update_application_status():
+    if not EMPLOYER_TOKEN:
+        print("Please login as an employer first.")
+        return
+    
+    print("Update Application Status")
+    application_id = input("Enter the Application ID: ")
+    print("Choose new status:")
+    print("1. Pending")
+    print("2. Reviewed")
+    print("3. Accepted")
+    print("4. Rejected")
+    status_choice = input("Enter your choice (1-4): ")
+
+    status_map = {
+        '1': 'pending',
+        '2': 'reviewed',
+        '3': 'accepted',
+        '4': 'rejected'
+    }
+
+    if status_choice not in status_map:
+        print("Invalid choice. Please try again.")
+        return
+
+    new_status = status_map[status_choice]
+
+    data = {
+        "status": new_status
+    }
+
+    try:
+        headers = {"Authorization": f"Token {EMPLOYER_TOKEN}"}
+        response = requests.patch(f"{BASE_URL}applications/{application_id}/", json=data, headers=headers)
+        response.raise_for_status()
+        print("Application status updated successfully.")
+        print("Response:", response.json())
+    except requests.RequestException as e:
+        print(f"Failed to update application status: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Status code: {e.response.status_code}")
+            print(f"Response content: {e.response.text}")
+
 def main():
     while True:
         print("\n1. Register")
@@ -439,7 +495,8 @@ def main():
         print("14. Rate and Review a Job Seeker")
         print("15. Update Job Post")
         print("16. Delete Job Post")
-        print("17. Exit")
+        print("17. Update Application Status")
+        print("18. Exit")
 
         choice = input("Enter your Choice: ")
 
@@ -476,6 +533,8 @@ def main():
         elif choice == '16':
             delete_job_post()
         elif choice == '17':
+            update_application_status()
+        elif choice == '18':
             print("Exiting...")
             break
         else:

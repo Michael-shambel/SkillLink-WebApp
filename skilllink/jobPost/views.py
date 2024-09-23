@@ -11,6 +11,12 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class JobPostViewSet(viewsets.ModelViewSet):
+    """
+    Job post viewsets for the job post model.
+    we use IsAuthenticated permission for the job post viewsets.
+    we define only create, update, destroy, retrieve, list methods here.
+    we use JobPostSerializer for the job post serializer.
+    """
     serializer_class = JobPostSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
@@ -18,16 +24,25 @@ class JobPostViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description', 'skills_required']
 
     def get_serializer_class(self):
+        """
+        get the serializer class for the job post.
+        """
         if self.action == 'retrieve':
             return JobPostDetailSerializer
         return JobPostSerializer
 
     def get_queryset(self):
+        """
+        get the queryset for the job post.
+        """
         if self.request.user.is_employer:
             return JobPost.objects.filter(posted_by=self.request.user)
         return JobPost.objects.all()
 
     def create(self, request, *args, **kwargs):
+        """
+        create a new job post object for the current user.
+        """
         if not request.user.is_employer:
             return Response({"error": "Only employer can create job posts"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -39,6 +54,9 @@ class JobPostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def apply(self, request, pk=None):
+        """
+        apply for a job post.
+        """
         job_post = self.get_object()
         if not request.user.is_jobseeker:
             return Response({"error": "Only job seekers can apply for jobs"}, status=status.HTTP_403_FORBIDDEN)
@@ -50,10 +68,19 @@ class JobPostViewSet(viewsets.ModelViewSet):
         return Response(ApplicationSerializer(application).data, status=status.HTTP_201_CREATED)
 
 class ApplicationViewSet(viewsets.ModelViewSet):
+    """
+    Application viewsets for the application model.
+    we use IsAuthenticated permission for the application viewsets.
+    we define only retrieve, list, update methods here.
+    we use ApplicationSerializer for the application serializer.
+    """
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        """
+        get the queryset for the application.
+        """
         user = self.request.user
         if user.is_employer:
             return Application.objects.filter(job_post__posted_by=user)
@@ -62,6 +89,9 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         return Application.objects.none()
 
     def update(self, request, *args, **kwargs):
+        """
+        update the application object for the current user.
+        """
         if not request.user.is_employer:
             return Response({"error": "Only employers can update application status"}, status=status.HTTP_403_FORBIDDEN)
 
