@@ -32,7 +32,7 @@ Job seekers can filter job listings based on type, location, and other parameter
 
 Technology Stack
 Backend: Django (Python), Django REST Framework
-Frontend: React.js
+Frontend: Vue.js
 Database: MySQL
 Geolocation: GeoDjango, Google Maps API
 Messaging: Django Channels (for real-time messaging)
@@ -51,3 +51,14 @@ Register as a job seeker.
 Log in and complete your profile with skills and experience.
 Browse job postings based on location and filters.
 Apply for jobs or communicate with employers directly.
+
+
+DONE BY:
+Michael Shambel Tefera
+Back-end engineer
+Linkdin Adress:- https://www.linkedin.com/in/michael-shambel-718537229?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
+
+
+Fredrick Mbanga
+Front-end Engineer
+Linkdin Adress:- https://www.linkedin.com/in/fredrick-mbanga-046755210?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
