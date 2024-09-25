@@ -1,3 +1,4 @@
+from rest_framework.decorators import action
 from rest_framework import viewsets, status, filters
 from rest_framework.permissions import IsAuthenticated
 from .models import JobPost
@@ -6,6 +7,8 @@ from .models import JobPost, Application
 from .serializers import JobPostSerializer, JobPostDetailSerializer, ApplicationSerializer, ApplicationCreateSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+
 
 class JobPostViewSet(viewsets.ModelViewSet):
     """
@@ -35,14 +38,14 @@ class JobPostViewSet(viewsets.ModelViewSet):
         if self.request.user.is_employer:
             return JobPost.objects.filter(posted_by=self.request.user)
         return JobPost.objects.all()
-    
+
     def create(self, request, *args, **kwargs):
         """
         create a new job post object for the current user.
         """
         if not request.user.is_employer:
             return Response({"error": "Only employer can create job posts"}, status=status.HTTP_403_FORBIDDEN)
-        
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(posted_by=self.request.user)
@@ -97,3 +100,23 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             return Response({"error": "You can only update applications for your own job posts"}, status=status.HTTP_403_FORBIDDEN)
 
         return super().update(request, *args, **kwargs)
+
+class JobApplicantsViewSet(viewsets.ViewSet):
+    """This class will return list of applicants and their details such as the
+    name, email, status of the application (pending, reviewed, accepted, rejected)
+    and any other relevant information.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request, job_post_id=None):
+        """Ensure the employer is authenticated and owns the job post
+           Serialize the applicant's data
+        """
+        try:
+            job_post = JobPost.objects.get(id=job_post_id, posted_by=request.user)
+        except JobPost.DoesNotExist:
+            return Response({"error": "JobPost does not exist or you are not authorized to view it."}, status=status.HTTP_404_NOT_FOUND)
+
+        applicants = Application.objects.filter(job_post=job_post)
+        serializer = ApplicationSerializer(applicants, many=True)
+        return Response(serializer.data)

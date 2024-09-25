@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 """
 Django settings for SkillLink project.
 
@@ -55,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'SkillLink.urls'
@@ -91,6 +90,7 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+
 
 
 # Password validation
@@ -143,10 +143,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 AUTH_USER_MODEL = 'users.CustomUser'
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
 ]
