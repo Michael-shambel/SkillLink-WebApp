@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django_filters',
     'jobPost',
     'users',
@@ -146,5 +147,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'users.CustomUser'
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080',
+]
 from datetime import timedelta
 TOKEN_EXPIRED_AFTER_SECONDS = timedelta(days=1)
