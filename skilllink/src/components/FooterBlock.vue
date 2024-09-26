@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-dark text-white text-center py-4">
+    <footer class="bg-dark text-white text-center py-2">
       <div class="container">
         <p>&copy; {{ new Date().getFullYear() }} Skilllink. All rights reserved.</p>
         <div>
