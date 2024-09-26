@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <div class="container-fluid">
-      <router-link to="/" class="navbar-brand">Skilllink</router-link>
+      <router-link to="/" class="navbar-brand">SkillLink</router-link>
     </div>
   </nav>
   <div class="login-page my-4">
