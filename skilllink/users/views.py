@@ -6,10 +6,16 @@ from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer, JobSeekerProfileSerializer, EmployerProfileSerializer, TokenSerializer, JobSeekerReviewSerializer, JobSeekerProfileDetailSerializer
 from .models import JobSeekerProfile, EmployerProfile, JobSeekerReview
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import PermissionDenied
 from django.http import Http404
+import os
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+from dotenv import load_dotenv
 
+load_dotenv()
+GOOGLE_CLIENT_ID = os.getenv('VUE_APP_GOOGLE_CLIENT_ID');
 User = get_user_model()
 
 class UserViewSet(viewsets.ViewSet):
@@ -41,7 +47,7 @@ class UserViewSet(viewsets.ViewSet):
             return Response({'error': 'Email and Password Required'}, status=status.HTTP_400_BAD_REQUEST)
 
         if User.objects.filter(email=email).exists():
-            return Response({'error': 'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'User already exists'}, status=status.HTTP_409_CONFLICT)
 
         user = User.objects.create_user(
             email=email,
@@ -56,6 +62,46 @@ class UserViewSet(viewsets.ViewSet):
             'user': serializer.data,
             'token': token.key
         }, status=status.HTTP_201_CREATED)
+
+        @api_view(['POST'])
+        def google_register(self, request):
+            """A user who chooses to sign up using Google doesn't manually enter their
+               email and password. Instead, they authenticate with Google, which provides an
+               ID token that verifies the user's identity.
+               Backend then uses this ID token to either register the user (if they don't exist) or
+               log them in (if they already exist
+            """
+            token = request.data.get('google_token')
+
+            try:
+                idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), 'GOOGLE_CLIENT_ID')
+                email = idinfo['email']
+
+                if User.objects.filter(email=email).exists():
+                    return Response({'error': 'User already exists'}, status=status.HTTP_409_CONFLICT)
+
+                is_employer = request.data.get('is_employer', False)
+                is_jobseeker = not is_employer
+
+                user = User.objects.create_user(
+                    username=email,
+                    email=email,
+                    is_employer=is_employer,
+                    is_jobseeker=is_jobseeker
+                )
+
+                user.set_unusable_password()
+                user.save()
+                token, _ = Token.objects.get_or_create(user=user)
+                serializer = UserSerializer(user)
+                return Response({
+                    'success': True,
+                    'user': serializer.data,
+                    'token': token.key
+                }, status=status.HTTP_201_CREATED)
+
+            except ValueError:
+                return Response({"success": False, "error": "Invalid token"}, status=400)
 
 
 class TokenViewSet(viewsets.ViewSet):
@@ -77,6 +123,10 @@ class TokenViewSet(viewsets.ViewSet):
         if correct we create a token for the user.
         then we serialie the token object and return the response.
         """
+        google_token = request.data.get('google_token')
+        if google_token:
+            return self.handle_google_login(google_token) # Check if it's a Google login request
+
         email = request.data.get('email')
         password = request.data.get('password')
 
@@ -99,6 +149,42 @@ class TokenViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
 
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def handle_google_login(self, google_token):
+        """GOOGLE AUTHENTICATION
+           ---------------------
+        - Once the user has registered with Google (or if they already have an account), they can use Google to log in
+        - Django will generate tokens on the backend and sent to frontend where they are stored in localstorage
+        - The google_token contains a payload that has users details.
+        - If token is valid, you fetch or create the user and generate a Django token for that user.
+        """
+        try:
+            # Verify the Google token with Google's API
+            idinfo = id_token.verify_oauth2_token(google_token, google_requests.Request(), GOOGLE_CLIENT_ID)
+
+            email = idinfo.get('email')
+            name = idinfo.get('name')
+            google_user_id = idinfo.get('sub')
+
+            # Check if user exists, or create a new user
+            user, created = User.objects.get_or_create(email=email, defaults={'username': email})
+
+            # Create or get a Django token for the user
+            token, _ = Token.objects.get_or_create(user=user)
+
+            # Return token and user info
+            return Response({
+                'token': token.key,
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'is_employer': user.is_employer,
+                    'is_jobseeker': user.is_jobseeker,
+                }
+            }, status=status.HTTP_200_OK)
+
+        except ValueError:
+            return Response({'error': 'Invalid Google token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class JobSeekerProfileViewSet(viewsets.ModelViewSet):

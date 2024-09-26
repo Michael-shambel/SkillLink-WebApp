@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-    <div class="container">
-      <router-link to="/" class="navbar-brand">Skilllink</router-link>
+    <div class="container-fluid">
+      <router-link to="/" class="navbar-brand">SkillLink</router-link>
 
       <button
         class="navbar-toggler"
@@ -161,6 +161,7 @@ export default {
 <style scoped>
 .navbar {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /*background: rgba(87, 174, 175, 0.9);*/
 }
 .navbar .nav-link img {
   margin-right: 8px;

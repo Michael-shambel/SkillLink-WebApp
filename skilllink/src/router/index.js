@@ -3,6 +3,7 @@
  */
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
+//import LandingPage from '../views/LandingPage.vue';
 import LoginPage from '../views/LoginPage.vue';
 import RegisterPage from '../views/RegisterPage.vue';
 import DashboardJobseeker from '../views/DashboardJobseeker.vue';
@@ -15,6 +16,7 @@ import ApplicationDetails from '../components/ApplicationDetails.vue';
 
 const routes = [
   { path: '/', component: HomePage },
+  //{ path: '/', component: LandingPage },
   { path: '/login', component: LoginPage },
   { path: '/register', component: RegisterPage },
   { path: '/dashboard/jobseeker', component: DashboardJobseeker },
@@ -25,10 +27,10 @@ const routes = [
     path: '/dashboard/employer/job-posts/:job_post_id/applicants',
     component: JobApplicants,
   },
-  /*{
+  {
     path: '/applications/:id',
     component: ApplicationDetails,
-  }*/
+  }
 
   //{ path: '/jobs', component: JobList },
 ];
